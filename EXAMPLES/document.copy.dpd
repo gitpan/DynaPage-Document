@@ -1,0 +1,19 @@
+!include.module =~Data::Dump
+DynaPage.PROG_LABEL =~DynaPage::Document - ver. 0.10 (rev. 1.9 2005/01/13 22:21:14)
+!include.data =~/data1.dps
+!include.data =~/data2.dps
+!include.data =~mydir/data3.dps
+!include.template =~template1.htmt
+D_DocumentFilename =~document.dpd
+section3 =~Section 3 content within file data1.dps
+section3 =~This is content of section 1 within file data2.dps
+section1 =~This is content of section 1 within file data1.dps
+section4 =~Section 3 content within file data2.dps
+mydir.section =~mydir.section content within file mydir/data3.dps
+section2 ==~
+	Section2 is
+	exact copy of text
+	contained within
+	section container
+
+~== section2

@@ -1,0 +1,9 @@
+  !include.template =- mydoc-template.htmt
+  my-title =- This is single line
+  my-head =- Hello World
+  my-para ==~
+   This is block
+   multiline content
+   blah blah
+   blah blah
+  ~== my-para 

@@ -1,0 +1,33 @@
+!include.template	=- document-handlers.htmt
+!include.handlers	==~
+
+	Init => sub
+	{
+		my( $self, $handler_name, $call_params ) = @_;
+		
+		print "HANDLER: name '$handler_name'  call param '$call_params' \n";
+		
+	},
+	DocumentFinal => sub
+	{
+		my( $self, $handler_name, $call_params ) = @_;
+
+		print "HANDLER: name '$handler_name'  call param '$call_params' \n";
+		
+	},
+
+~== !include.handlers
+
+!include.module		=- Fake::Module1 Fake::Module2
+
+text1 ==~
+
+	Text 1
+
+~== text1
+
+text2 ==~
+
+	Text 2
+
+~== text2

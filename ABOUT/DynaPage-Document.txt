@@ -1,0 +1,26 @@
+
+!include.data =- /example/content.sourcer
+!include.template =- /example/direct-plain-template.txt
+!include.module =- /example/direct-plain-module.pm
+
+!template ==~
+<html>[~content~]</html>
+~== !template
+
+# mapping
+TamplateName =- [~OurName~]
+OurName =- Some Content
+
+content-type	=-	text/html
+content-charset	=-	windows-1250
+meta-title		=-	Dnes bude veselo
+meta-description
+	==-
+	Nìjaké kecy o tom, že dnes bude ale poøádnì veselo 
+	-==
+meta-description
+
+meta-keywords	=- dnes bude veselo
+
+title-para =- Titulek jak má být 
+master-para =- [|feedable-template|target1=source1;target2=source2]

@@ -1,0 +1,4 @@
+!include.data =- data-multi-include2.dps
+
+level1 =- Text 1
+

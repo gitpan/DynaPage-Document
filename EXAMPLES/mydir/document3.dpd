@@ -1,0 +1,14 @@
+!include.template	=- ../template1.htmt
+!include.data		=- /data1.dps
+!include.data		=- /data2.dps
+!include.data		=- /mydir/data3.dps
+
+!include.module		=- Fake::Module::Name
+
+section2 ==~
+	Section2 is
+	exact copy of text
+	contained within
+	section container
+
+~== section2

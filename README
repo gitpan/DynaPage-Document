@@ -1,0 +1,269 @@
+NAME
+
+    DynaPage::Document - DynaPage Document container
+
+     #------------------------------------------------------
+     # (C) Daniel Peder & Infoset s.r.o., all rights reserved
+     # http://www.infoset.com, Daniel.Peder@infoset.com
+     #------------------------------------------------------
+
+SYNOPSIS
+
+    step1 - document ( create file mydoc.document )
+
+      ---[content of mydoc-document.info]---
+
+      !include.template =- mydoc-template.htmt
+      my-title =- This is single line
+      my-head =- Hello World
+      my-para ==~
+       This is block
+       multiline content
+       blah blah
+       blah blah
+      ~== my-para 
+
+      ---[content of mydoc-document.info]---
+
+    step2 - template ( create file mydoc.template )
+
+      ---[content of mydoc-template.htmt]---
+
+      <html>
+      <title>[~my-title~]</title>
+      <h1>[~my-head~]</h1>
+      <p>[~my-para~]</p>
+      </html>
+
+      ---[content of mydoc-template.htmt]---
+
+    step3 - open
+
+      use DynaPage::Document;
+      use DynaPage::Document::ext::include;
+      my $doc = DynaPage::Document->new(
+        {
+          RootDir=>'.',
+          Document=>'mydoc-document.info',
+        }
+      );
+
+    step4 - render
+
+     print $doc->Render();
+
+      ---[dump of printed result]---
+      <html>
+      <title>This is single line</title>
+      <h1>Hello World</h1>
+      <p>   This is block
+       multiline content
+       blah blah
+       blah blah</p>
+      </html>
+      ---[dump of printed result]---
+
+    See also
+
+    Working copy of this SYNOPSIS :
+
+     .../DynaPage/Document/EXAMPLES/SYNOPSIS
+ 
+    Other EXAMPLES :
+
+     .../DynaPage/Document/EXAMPLES/
+ 
+    How to make it with Apache2/mod_perl2 :
+
+     SYNOPSIS of DynaPage::Apache2
+
+    Powerfull extensions to increase website building productivity
+
+     METHODS of DynaPage::Document::ext::include
+  
+DESCRIPTION
+
+     $Revision: 1.10 $
+     $Date: 2005/01/14 12:23:49 $
+
+METHODS
+
+    new ( $options ) : blessed
+        example:
+
+        $options = {
+
+                RootDir  => '/my/RootDir/'
+                Document => '//my/RootDir/BaseDir/Document.info',
+                Template => '//my/work/dir/include/Template.htmt',
+                DocumentDir  => '/my/RootDir/BaseDir/'
+
+                Data => $data_for_sourcer,
+        
+                HooksEnable => 1,
+        }
+
+        RootDir must be allways specified as absolute path.
+
+        Double slashed path for Document and Template forces absolute path
+        within filesystem.
+
+        BaseDir is absolute path to directory where is the Document located.
+
+        Path specifications within the Document :
+
+         - without leading slash - relative to BaseDir
+         - with single leading slash - relative to RootDir
+         - with double leading slash - absolute to filesystem
+ 
+         HooksEnable is by default set to true. Set it to FALSE to disable
+        hooks.
+
+    Render ( ) : string
+        Render final document. Just shortcut of $self->Template->Feed() .
+
+    SetSignal ( $name, $message ) : $string
+        Set internal document signal to $message value.
+
+        Set $self->{SIGNAL_STATUS} to true, increasing it by 1.
+
+    GetSignal ( [$name [, $clear]] ) : bool | string
+        Without $name specified, return $self->{SIGNAL_STATUS}.
+
+        Get value of $message previously set signal $name.
+
+        With $clear set to any TRUE value, the message will be cleared.
+
+        Allways clear the $self->{SIGNAL_STATUS}.
+
+        Returns undef unless signal of given $name doesn't exists, this is
+        the exception, when the $self->{SIGNAL_STATUS} is not cleared.
+
+    CallHook ( $name ) : $string
+        Call included document hook / if any.
+
+    Template ( $template_body ) : blessed Template
+        Get blessed Template object unless $template_body specified.
+        Otherwise create new template object using template_body .
+
+    Sourcer ( ) : blessed Sourcer
+        Sourcer object.
+
+    Get ( @args ) : SOURCER
+        SOURCER: see DynaPage::Sourcer for details. This is only shortcut
+        interface to SOURCER methods.
+
+            $self->Sourcer->Get(@args)
+
+    Set ( @args ) : SOURCER
+        SOURCER: see DynaPage::Sourcer for details. This is only shortcut
+        interface to SOURCER methods.
+
+            $self->Sourcer->Set(@args)
+
+    Add ( @args ) : SOURCER
+        SOURCER: see DynaPage::Sourcer for details. This is only shortcut
+        interface to SOURCER methods.
+
+            $self->Sourcer->Add(@args)
+
+    HandleIncludes ( ) : bool
+        Handle recently parsed include references:
+
+        !include.data ... subdocument ... example: /myinc/subdoc.idoc
+
+        !include.template ... master template ... example:
+        /mytmplt/templt1.htmt
+
+        !include.parameters ... PGCE - POST, GET, COOKIES, ENV values
+        imported into names with prefixes P_, G_, C_, E_, or without
+        prefixes if specified as lowercase pgce.
+
+        example: PGe ... will import POST and GET parameters with prefixes,
+        ENV values without prefixes, COOKIES not imported.
+
+        Specifiyng 'A' or 'a' is shortcut for 'PGCE' resp. 'pgce'.
+
+        !include.module ... use Any::Perl::Module::You::Wish ... multiple
+        modules could be specified, each one by new single line.
+
+        !include.handlers ... will be obsoleted by include.hooks (which is
+        better description of its purpose)
+
+        !include.hooks ... perl script fragmets called by document parent
+        (currently DynaDoc::Apache).
+
+        There are currently two hooks used by DynaPage::Apache :
+
+         - Init            ... after Apache created DynaPage::Document object
+         - DocumentFinal   ... before Apache sends the content out.
+
+        example (fragment of document containing hooks definition):
+
+          !include.hooks ==~
+  
+            Init => sub {
+                my( $self, $hook_name, $hashref_parameters ) = @_;
+                $self->Set( my_token_name => 'Hello World');
+                # my_token_name will be later inserted 
+                # into Template token mark [~my_token_name~] 
+                return 1;
+            }
+  
+          ~== !include.hooks
+
+    HandleExtensions ( ) : bool
+        Handle extensions. Their corresponding handlers must be one of
+        following three sub references: (only the first one found is called,
+        lookup is in following order)
+
+         1: DynaPage::Document::ext::B<part1>::B<Part2>::PLUG()
+         2: DynaPage::Document::ext::B<part1>::B<Part2()>::PLUG
+         3: DynaPage::Document::ext::B<part1>::PLUG()
+ 
+        EXAMPLE:
+
+        *source:*
+
+         ...
+         !include.data =- /mydir/myfile.data
+         ...
+ 
+        *call:*
+
+         DynaPage::Document::ext::include::data( 
+            $Doc, [ '!include.data','/mydir/myfile.data' ] 
+         )
+ 
+        *arguments:*
+
+        $Doc is current document object
+
+        ['...','...'] is arrayref with field_name and field_value obtained
+        during source parsing.
+
+    Read ( $filename ) : string
+        Read the whole file, relative to RootDir.
+
+    Serialize ( $filename, $fields ) : string | bool-success
+        Serialize document's fields.
+
+    GetAbsFilename ( $filename )
+        Get absolute filename. Filenames without leading slash are relative
+        to DocumentDir directory, of the document itself. Single leading
+        slash '/' is for RootDir and double leading slash '//' is for
+        absolute path within filesystem.
+
+    RootDir ( [ $dir ] )
+        Explicitly set root dir name.
+
+    DocumentDir ( [ $dir ] )
+        Explicitly set document dir name.
+
+TODO
+
+    1. modules inclusion - a) inclusion, b) hook points
+
+    2. multiple templates support for different content types - html, wap,
+    txt, ...
+

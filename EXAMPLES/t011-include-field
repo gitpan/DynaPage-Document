@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+
+	use strict;
+	use warnings;
+	use Data::Dump qw(pp);
+	use	DynaPage::Document;
+	use DynaPage::Document::ext::include;
+	
+	print "START\n";
+	
+	my	$opt	= 
+	{
+		RootDir			=> '/usr/local/src/perl-devel/DynaPage-Document/EXAMPLES',
+		Document		=> '//usr/local/src/perl-devel/DynaPage-Document/EXAMPLES/t011-include-field.dpd',
+		
+	};
+	
+	my	$dpd	= DynaPage::Document->new( $opt );
+	
+	print "PARSED\n";
+	
+	print join "\n"
+		,pp($dpd)
+		,$dpd->Render()
+		,''
+	;
